@@ -7,7 +7,7 @@ class Chat:
     self.model = model
     self.hf_pipline = self.load_generator()
     self.messages = [
-        {"role":"system", "content": ""},
+       {"role":"system", "content": "You are a helpful assistant"},
     ]
 
   def save_chat(self, fname:str="example.json"):
@@ -23,7 +23,7 @@ class Chat:
 
     if to_reset_chat.lower() == "y":
       self.messages = [
-        {"role":"system", "content": ""},
+        {"role":"system", "content": "You are a helpful assistant"},
         ]
       return "Chat History Saved to File and Cleared"
     elif to_reset_chat.lower() == "n":
@@ -58,19 +58,15 @@ class Chat:
       return prompt
 
 
-  def format_output(self,output, prompt):
-    prompt_end_idx = len(prompt)
-    formatted = output[prompt_end_idx:]
-    return formatted
-
   def chat(self, user_prompt: str, messages:list, show_prompt: bool):
+    self.messages = messages
     self.messages.append({"role":"user", "content": user_prompt})
     prompt = self.parse_message(self.messages)
     if show_prompt:
       print("Prompt: ", prompt)
     sequences = self.hf_pipline(prompt)
     output = sequences[0]['generated_text']
-    formatted = self.format_output(output)
+    formatted = self.format_output(output, prompt)
     self.messages.append({"role":"system", "content": formatted})
 
     response = {
@@ -80,11 +76,9 @@ class Chat:
     return response
   
   def start_chat(self, sys_prompt=None):
-    if not sys_prompt:
-      sys_prompt = """
-      You are a helpful assistant who answers questions as truthfully as possible. If you dont know an answer, say I dont know.
-      """
-    self.messages[0]["content"] = sys_prompt
+    if sys_prompt:
+      self.messages[0]["content"] = sys_prompt
+      
     while True:
       user_prompt = input("Type your prompt or type End Chat to end the chat(case sensitive):  ")
       if user_prompt == "End Chat":
