@@ -50,11 +50,13 @@ You will also be prompted to clear the chat history, which you should if you pla
 ### Chat API
 The Chat API provides a OpenAI like interface, and can be called as follows:
 ```python
-llm.chat(
+response = llm.chat(
     user_prompt="What is the capital of Bangladesh?",
     messages=[
         {"role": "system", "content": "You are a helpful assistant"}
     ], 
     show_prompt=False
     )
+
+print(response['output'])
 ```
