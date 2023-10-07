@@ -51,22 +51,17 @@ class Chat:
       prompt = system_prompt
       for i in range(1,len(messages)):
         if i%2 ==0:
-          prompt+= "<<SYS>>\n" + messages[i]['content'] + "\n<</SYS>>\n"
+          prompt+= "\n" + messages[i]['content'] + "</s>\n"
         else:
-          prompt+=messages[i]['content'] + "\n"
-      prompt+="[/INST]"
+          prompt+= "<s>[INST]"+messages[i]['content'] + "[/INST]\n"
+
       return prompt
 
 
-  def format_output(self,output):
-    l, r = 0, len("[/INST]")
-    while r<len(output):
-      if "[/INST]" == output[l:r]:
-        return output[r+1:]
-        break
-      else:
-        l +=1
-        r+=1
+  def format_output(self,output, prompt):
+    prompt_end_idx = len(prompt)
+    formatted = output[prompt_end_idx:]
+    return formatted
 
   def chat(self, user_prompt: str, messages:list, show_prompt: bool):
     self.messages.append({"role":"user", "content": user_prompt})
