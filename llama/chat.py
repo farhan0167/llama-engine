@@ -56,6 +56,11 @@ class Chat:
           prompt+= "<s>[INST]"+messages[i]['content'] + "[/INST]\n"
 
       return prompt
+    
+  def format_output(self,output, prompt):
+    prompt_end_idx = len(prompt)
+    formatted = output[prompt_end_idx:]
+    return formatted
 
 
   def chat(self, user_prompt: str, messages:list, show_prompt: bool):
