@@ -61,7 +61,7 @@ class Chat:
     sequences = self.hf_pipline(prompt)
     output = sequences[0]['generated_text']
     formatted = self.format_output(output, prompt)
-    self.messages.append({"role":"system", "content": formatted})
+    self.messages.append({"role":"assistant", "content": formatted})
 
     response = {
         "output": formatted,
