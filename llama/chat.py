@@ -41,19 +41,8 @@ class Chat:
     return generator
   
   def parse_message(self, messages:list):
-    system_prompt = "<s>[INST] <<SYS>>\n" + messages[0]['content'] + "\n<</SYS>>\n"
-    if len(messages) == 2:
-      #system_prompt = "<s>[INST] <<SYS>>\n" + messages[0]['content'] + "\n<</SYS>>"
-      user_prompt = messages[1]['content'] + "[/INST]"
-      prompt = system_prompt + user_prompt
-      return prompt
-    else:
-      prompt = system_prompt
-      for i in range(1,len(messages)):
-        if i%2 ==0:
-          prompt+= "\n" + messages[i]['content'] + "</s>\n"
-        else:
-          prompt+= "<s>[INST]"+messages[i]['content'] + "[/INST]\n"
+      self.tokenizer.use_default_system_prompt = False
+      prompt = self.tokenizer.apply_chat_template(messages, tokenize=False)
 
       return prompt
     
