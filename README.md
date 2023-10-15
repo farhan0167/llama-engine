@@ -24,7 +24,9 @@ This should load the Llama-2-13B Chat model with 4 bit Quantization and should b
 ```python
 llm = Chat(tokenizer=llama.tokenizer, model=llama.model)
 
-llm.start_chat(sys_prompt="You are a helpful assistant who analyzes texts to understand the sentiment. You advise whether its positive, negative or neutral")
+messages=[{"role": "system", "content": "You are a helpful assistant"}]
+
+llm.start_chat(messages=messages)
 ```
 
 Output:
