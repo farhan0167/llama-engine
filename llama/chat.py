@@ -1,6 +1,6 @@
 from transformers import pipeline
 import json
-from utils.output_filters import OutputFilter
+from utils.output_filter import OutputFilter
 
 class Chat:
   def __init__(self, tokenizer, model):
@@ -8,7 +8,7 @@ class Chat:
     self.model = model
     self.hf_pipline = self.load_generator()
     self.messages = []
-    self.output_filters = []
+    self.output_filters = [model.value for model in OutputFilter]
 
   def save_chat(self, fname:str="example.json"):
     messages = self.messages
@@ -44,9 +44,14 @@ class Chat:
 
       return prompt
     
-  def format_output(self,output, prompt):
+  def format_output(self,output:str, prompt:str) -> str:
     prompt_end_idx = len(prompt)
     formatted = output[prompt_end_idx:]
+
+    for keyword in self.output_filters:
+      if keyword in formatted:
+          formatted = formatted.replace(keyword, "")
+          break
     return formatted
 
 
