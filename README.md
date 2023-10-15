@@ -1,5 +1,9 @@
 # High Level API for Running Llama Models 🦙 on Colab
 
+Load open source large language models on Google Colab with 16.7% less code. The following models are supported:
+1. Llama-2 7B and 13B, and its variants
+2. [HuggingFaceH4/zephyr-7b-alpha](https://huggingface.co/HuggingFaceH4/zephyr-7b-alpha), and its variants
+3. [mistralai/Mistral-7B-Instruct-v0.1](https://huggingface.co/mistralai/Mistral-7B-Instruct-v0.1), and its variants
 
 ## Getting Started
 
