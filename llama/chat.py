@@ -1,14 +1,14 @@
 from transformers import pipeline
 import json
+from utils.output_filter import OutputFilter
 
 class Chat:
   def __init__(self, tokenizer, model):
     self.tokenizer = tokenizer
     self.model = model
     self.hf_pipline = self.load_generator()
-    self.messages = [
-       {"role":"system", "content": "You are a helpful assistant"},
-    ]
+    self.messages = []
+    self.output_filters = [model.value for model in OutputFilter]
 
   def save_chat(self, fname:str="example.json"):
     messages = self.messages
@@ -22,9 +22,7 @@ class Chat:
       to_reset_chat = input("Invalid Input. Try again. Do you want to clear your chat history? Type Y/N/y/n: ")
 
     if to_reset_chat.lower() == "y":
-      self.messages = [
-        {"role":"system", "content": "You are a helpful assistant"},
-        ]
+      self.messages = []
       return "Chat History Saved to File and Cleared"
     elif to_reset_chat.lower() == "n":
       return "Chat History Saved to File"
@@ -34,32 +32,26 @@ class Chat:
     generator = pipeline(
         model=self.model, tokenizer=self.tokenizer,
         task='text-generation',
-        temperature=0.1,
-        max_new_tokens=500,
-        repetition_penalty=1.1
+        temperature=temp,
+        max_new_tokens=max_new_tokens,
+        repetition_penalty=repetition_penalty
     )
     return generator
   
   def parse_message(self, messages:list):
-    system_prompt = "<s>[INST] <<SYS>>\n" + messages[0]['content'] + "\n<</SYS>>\n"
-    if len(messages) == 2:
-      #system_prompt = "<s>[INST] <<SYS>>\n" + messages[0]['content'] + "\n<</SYS>>"
-      user_prompt = messages[1]['content'] + "[/INST]"
-      prompt = system_prompt + user_prompt
-      return prompt
-    else:
-      prompt = system_prompt
-      for i in range(1,len(messages)):
-        if i%2 ==0:
-          prompt+= "\n" + messages[i]['content'] + "</s>\n"
-        else:
-          prompt+= "<s>[INST]"+messages[i]['content'] + "[/INST]\n"
+      self.tokenizer.use_default_system_prompt = False
+      prompt = self.tokenizer.apply_chat_template(messages, tokenize=False)
 
       return prompt
     
-  def format_output(self,output, prompt):
+  def format_output(self,output:str, prompt:str) -> str:
     prompt_end_idx = len(prompt)
     formatted = output[prompt_end_idx:]
+
+    for keyword in self.output_filters:
+      if keyword in formatted:
+          formatted = formatted.replace(keyword, "")
+          break
     return formatted
 
 
@@ -72,7 +64,7 @@ class Chat:
     sequences = self.hf_pipline(prompt)
     output = sequences[0]['generated_text']
     formatted = self.format_output(output, prompt)
-    self.messages.append({"role":"system", "content": formatted})
+    self.messages.append({"role":"assistant", "content": formatted})
 
     response = {
         "output": formatted,
@@ -80,10 +72,9 @@ class Chat:
     }
     return response
   
-  def start_chat(self, sys_prompt=None):
-    if sys_prompt:
-      self.messages[0]["content"] = sys_prompt
-      
+  def start_chat(self, messages:list):
+    self.messages = messages
+
     while True:
       user_prompt = input("Type your prompt or type End Chat to end the chat(case sensitive):  ")
       if user_prompt == "End Chat":

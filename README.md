@@ -1,5 +1,9 @@
 # High Level API for Running Llama Models 🦙 on Colab
 
+Load open source large language models on Google Colab with 16.7% less code. The following models are supported:
+1. Llama-2 7B and 13B, and its variants
+2. [HuggingFaceH4/zephyr-7b-alpha](https://huggingface.co/HuggingFaceH4/zephyr-7b-alpha), and its variants
+3. [mistralai/Mistral-7B-Instruct-v0.1](https://huggingface.co/mistralai/Mistral-7B-Instruct-v0.1), and its variants
 
 ## Getting Started
 
@@ -24,7 +28,9 @@ This should load the Llama-2-13B Chat model with 4 bit Quantization and should b
 ```python
 llm = Chat(tokenizer=llama.tokenizer, model=llama.model)
 
-llm.start_chat(sys_prompt="You are a helpful assistant who analyzes texts to understand the sentiment. You advise whether its positive, negative or neutral")
+messages=[{"role": "system", "content": "You are a helpful assistant"}]
+
+llm.start_chat(messages=messages)
 ```
 
 Output:
@@ -60,3 +66,8 @@ response = llm.chat(
 
 print(response['output'])
 ```
+
+## Roadmap
+
+- [ ] Introduce OpenAI GPT Function like capabilities
+- [ ] Provide a low code framework to fine-tune LLMs using QLoRA, and the ability to attach/detach adapters
