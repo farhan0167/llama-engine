@@ -66,3 +66,8 @@ response = llm.chat(
 
 print(response['output'])
 ```
+
+## Roadmap
+
+- [ ] Introduce OpenAI GPT Function like capabilities
+- [ ] Provide a low code framework to fine-tune LLMs using QLoRA, and the ability to attach/detach adapters
