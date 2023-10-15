@@ -1,14 +1,14 @@
 from transformers import pipeline
 import json
+from utils.output_filters import OutputFilter
 
 class Chat:
   def __init__(self, tokenizer, model):
     self.tokenizer = tokenizer
     self.model = model
     self.hf_pipline = self.load_generator()
-    self.messages = [
-       {"role":"system", "content": "You are a helpful assistant"},
-    ]
+    self.messages = []
+    self.output_filters = []
 
   def save_chat(self, fname:str="example.json"):
     messages = self.messages
@@ -22,9 +22,7 @@ class Chat:
       to_reset_chat = input("Invalid Input. Try again. Do you want to clear your chat history? Type Y/N/y/n: ")
 
     if to_reset_chat.lower() == "y":
-      self.messages = [
-        {"role":"system", "content": "You are a helpful assistant"},
-        ]
+      self.messages = []
       return "Chat History Saved to File and Cleared"
     elif to_reset_chat.lower() == "n":
       return "Chat History Saved to File"
@@ -34,9 +32,9 @@ class Chat:
     generator = pipeline(
         model=self.model, tokenizer=self.tokenizer,
         task='text-generation',
-        temperature=0.1,
-        max_new_tokens=500,
-        repetition_penalty=1.1
+        temperature=temp,
+        max_new_tokens=max_new_tokens,
+        repetition_penalty=repetition_penalty
     )
     return generator
   
@@ -69,10 +67,9 @@ class Chat:
     }
     return response
   
-  def start_chat(self, sys_prompt=None):
-    if sys_prompt:
-      self.messages[0]["content"] = sys_prompt
-      
+  def start_chat(self, messages:list):
+    self.messages = messages
+
     while True:
       user_prompt = input("Type your prompt or type End Chat to end the chat(case sensitive):  ")
       if user_prompt == "End Chat":
