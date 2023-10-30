@@ -55,7 +55,7 @@ class Chat:
     return formatted
 
 
-  def chat(self, user_prompt: str, messages:list, show_prompt: bool):
+  def chat(self, user_prompt: str, messages:list, show_prompt: bool=False):
     self.messages = messages
     self.messages.append({"role":"user", "content": user_prompt})
     prompt = self.parse_message(self.messages)
