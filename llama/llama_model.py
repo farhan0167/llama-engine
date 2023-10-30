@@ -17,6 +17,7 @@ class LlamaModel:
     self.access_hf = self.huggingface_access()
     self.quantization_config = self.set_quantization_config() if quantize_model else None
     self.quantization_config = self.set_quantization_config(bnb_4bit_use_double_quant=False) if trainable else self.quantization_config
+    self.quantization_config = self.quantization_config if quantize_model else None #note: might need refactoring. this is for if trainable but not quantized.
     self.tokenizer = self.load_tokenizer()
     self.model = self.load_model() if load_model else None
   
