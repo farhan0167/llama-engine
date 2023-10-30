@@ -4,23 +4,43 @@ import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
 class LlamaModel:
-  def __init__(self, hf_token, llama_model_card):
+  def __init__(
+      self, 
+      hf_token:str | None = None, 
+      llama_model_card:str = "meta-llama/Llama-2-13b-chat-hf",
+      load_model:bool = True,
+      quantize_model:bool = True,
+      trainable:bool = False
+  ):
     self.hf_token = hf_token
     self.llama_model_card = llama_model_card
     self.access_hf = self.huggingface_access()
-    self.quantization_config = self.set_quantization_config()
+    self.quantization_config = self.set_quantization_config() if quantize_model else None
+    self.quantization_config = self.set_quantization_config(bnb_4bit_use_double_quant=False) if trainable else self.quantization_config
     self.tokenizer = self.load_tokenizer()
-    self.model = self.load_model()
+    self.model = self.load_model() if load_model else None
   
   def huggingface_access(self):
-    login(token=self.hf_token)
+    if self.hf_token:
+      try:
+        login(token=self.hf_token)
+      except Exception as e:
+        print("Error logging in to HuggingFace: ", e)
+        return None
+
   
-  def set_quantization_config(self):
+  def set_quantization_config(
+      self,
+      load_in_4bit: bool = True,
+      bnb_4bit_quant_type: str = "nf4",
+      bnb_4bit_use_double_quant:bool = True,
+      bnb_4bit_compute_dtype = torch.bfloat16
+    ):
     nf4_config = BitsAndBytesConfig(
-      load_in_4bit=True,
-      bnb_4bit_quant_type="nf4",
-      bnb_4bit_use_double_quant=True,
-      bnb_4bit_compute_dtype=torch.bfloat16
+      load_in_4bit=load_in_4bit,
+      bnb_4bit_quant_type=bnb_4bit_quant_type,
+      bnb_4bit_use_double_quant=bnb_4bit_use_double_quant,
+      bnb_4bit_compute_dtype=bnb_4bit_compute_dtype
     )
     return nf4_config
   
