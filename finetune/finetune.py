@@ -13,7 +13,7 @@ class Finetune:
     def __init__(
             self,
             model: LlamaModel,
-            dataset
+            dataset: object
     ) -> None:
         self.model = model.model
         self.tokenizer = model.tokenizer
@@ -82,13 +82,19 @@ class Finetune:
             max_seq_length:int | None = None,
             packing:bool = False,
             save_model:bool = True,
-            new_model_name:str = "finetuned_model_card"
+            new_model_name:str = "finetuned_model_card",
+            train_epochs:int = 1,
+            batch_size: int= 4,
+            max_steps:int = -1
     ):
         self.model.config.use_cache = False
         self.model.config.pretraining_tp = 1
         self.tokenizer.pad_token = self.tokenizer.eos_token
         self.tokenizer.padding_side = "right"
 
+        self.training_args = self.set_training_arguments(
+            num_train_epochs=train_epochs, per_device_train_batch_size=batch_size, max_steps=max_steps
+        )
         trainer = self.trainer(
             dataset_text_field=dataset_text_field,
             max_seq_length=max_seq_length
