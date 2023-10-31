@@ -22,22 +22,23 @@ class Finetune:
 
     def set_training_arguments(
             self,
-            output_dir="./results",
-            num_train_epochs=1,
-            per_device_train_batch_size=4,
-            gradient_accumulation_steps=1,
-            optim="paged_adamw_32bit",
-            save_steps=0,
-            logging_steps=25,
-            learning_rate=2e-4,
-            weight_decay=0.001,
-            fp16=False,
-            bf16=False,
-            max_grad_norm=0.3,
-            max_steps=-1,
-            warmup_ratio=0.03,
-            group_by_length=True,
-            lr_scheduler_type="cosine"
+            output_dir:str="./results",
+            num_train_epochs:int=1,
+            per_device_train_batch_size:int=4,
+            gradient_accumulation_steps:int=1,
+            optim:str="paged_adamw_32bit",
+            save_steps:int=0,
+            logging_steps:int=25,
+            learning_rate:float=2e-4,
+            weight_decay:float=0.001,
+            fp16:bool=False,
+            bf16:bool=False,
+            max_grad_norm:float=0.3,
+            max_steps:int=-1,
+            warmup_ratio:float=0.03,
+            group_by_length:bool=True,
+            lr_scheduler_type:str="cosine",
+            logging_dir:str = "./logs"
     ):
         training_arguments = TrainingArguments(
             output_dir=output_dir,
@@ -55,7 +56,8 @@ class Finetune:
             max_steps=max_steps,
             warmup_ratio=warmup_ratio,
             group_by_length=group_by_length,
-            lr_scheduler_type=lr_scheduler_type
+            lr_scheduler_type=lr_scheduler_type,
+            logging_dir=logging_dir
         )
         return training_arguments
     
