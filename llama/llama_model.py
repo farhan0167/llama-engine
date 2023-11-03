@@ -93,7 +93,7 @@ class LlamaModel:
     
     model_params = self.print_trainable_parameters()
     total_params = model_params.get("all_param")
-    marker = "="*15
+    marker = "="*35
     byte = 8
     int4 = 4
     int8 = 8
@@ -113,10 +113,10 @@ class LlamaModel:
 
     print(marker)
     print("Inference Memory Requirement (Approximation)")
-    print(f"Floating Point 32 {inference_fp32_memory} GB")
-    print(f"Floating Point 16 {inference_bf16_fp16_memory} GB")
-    print(f"Int 8 {inference_int8_memory} GB")
-    print(f"Int 4 {inference_int4_memory} GB")
+    print(f"Floating Point 32: {inference_fp32_memory:.2f} GB")
+    print(f"Floating Point 16: {inference_bf16_fp16_memory:.2f} GB")
+    print(f"Quantized Int 8: {inference_int8_memory:.2f} GB")
+    print(f"Quantized Int 4: {inference_int4_memory:.2f} GB")
     print(marker)
 
 
