@@ -69,12 +69,9 @@ class LlamaModel:
     if not self.model:
       return None
     
-    trainable_params = 0
-    all_param = 0
-    for _, param in self.model.named_parameters():
-        all_param += param.numel()
-        if param.requires_grad:
-            trainable_params += param.numel()
+    all_param = self.model.num_parameters()
+    trainable_params = self.model.num_parameters(only_trainable=True)
+
     print(
         f"trainable params: {trainable_params} || all params: {all_param} || trainable%: {100 * trainable_params / all_param}"
     )
