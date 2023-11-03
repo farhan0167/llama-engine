@@ -60,3 +60,65 @@ class LlamaModel:
         device_map='auto',
     )
     return model
+  
+  def print_trainable_parameters(self):
+    """
+    Prints the number of trainable parameters in the model.
+    Adapted from https://colab.research.google.com/drive/1VoYNfYDKcKRQRor98Zbf2-9VQTtGJ24k#scrollTo=gkIcwsSU01EB
+    """
+    if not self.model:
+      return None
+    
+    trainable_params = 0
+    all_param = 0
+    for _, param in self.model.named_parameters():
+        all_param += param.numel()
+        if param.requires_grad:
+            trainable_params += param.numel()
+    print(
+        f"trainable params: {trainable_params} || all params: {all_param} || trainable%: {100 * trainable_params / all_param}"
+    )
+    return {
+      "trainable_params": trainable_params,
+      "all_param": all_param,
+      "trainable %": 100 * trainable_params / all_param
+    }
+  
+  def estimate_memory_footprint(self):
+    """
+    Math derived from EleutherAI Transformer Math 101: https://blog.eleuther.ai/transformer-math/
+    """
+    if not self.model:
+      return None
+    
+    model_params = self.print_trainable_parameters()
+    total_params = model_params.get("all_param")
+    marker = "="*15
+    byte = 8
+    int4 = 4
+    int8 = 8
+    bf16_fp16 = 16
+    fp32 = 32
+    gb_unit = 1024**3
+
+    fp32_memory = ((fp32/byte)*total_params)/gb_unit
+    bf16_fp16_memory = ((bf16_fp16/byte)*total_params)/gb_unit
+    int8_memory = ((int8/byte)*total_params)/gb_unit
+    int4_memory = ((int4/byte)*total_params)/gb_unit
+
+    inference_fp32_memory = fp32_memory * 1.2
+    inference_bf16_fp16_memory = bf16_fp16_memory * 1.2
+    inference_int8_memory = int8_memory * 1.2
+    inference_int4_memory = int4_memory * 1.2
+
+    print(marker)
+    print("Inference Memory Requirement (Approximation)")
+    print(f"Floating Point 32 {inference_fp32_memory} GB")
+    print(f"Floating Point 16 {inference_bf16_fp16_memory} GB")
+    print(f"Int 8 {inference_int8_memory} GB")
+    print(f"Int 4 {inference_int4_memory} GB")
+    print(marker)
+
+
+
+
