@@ -2,6 +2,7 @@ from huggingface_hub import login
 from transformers import BitsAndBytesConfig
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
+from typing import Dict
 
 class LlamaModel:
   def __init__(
@@ -10,7 +11,8 @@ class LlamaModel:
       llama_model_card:str = "meta-llama/Llama-2-13b-chat-hf",
       load_model:bool = True,
       quantize_model:bool = True,
-      trainable:bool = False
+      trainable:bool = False,
+      device_map:str | Dict = "auto"
   ):
     self.hf_token = hf_token
     self.llama_model_card = llama_model_card
@@ -18,6 +20,7 @@ class LlamaModel:
     self.quantization_config = self.set_quantization_config() if quantize_model else None
     self.quantization_config = self.set_quantization_config(bnb_4bit_use_double_quant=False) if trainable else self.quantization_config
     self.quantization_config = self.quantization_config if quantize_model else None #note: might need refactoring. this is for if trainable but not quantized.
+    self.device_map = device_map
     self.tokenizer = self.load_tokenizer()
     self.model = self.load_model() if load_model else None
   
@@ -57,7 +60,7 @@ class LlamaModel:
         self.llama_model_card,
         trust_remote_code=True,
         quantization_config=self.quantization_config,
-        device_map='auto',
+        device_map=self.device_map,
     )
     return model
   
